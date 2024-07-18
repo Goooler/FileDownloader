@@ -29,7 +29,7 @@ afterEvaluate {
 }
 
 checkstyle {
-    toolVersion = '6.18'
+    toolVersion = '6.19'
 }
 
 dependencies {
