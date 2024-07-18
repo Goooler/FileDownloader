@@ -27,7 +27,6 @@ import android.os.PowerManager;
 import android.os.StatFs;
 import android.text.TextUtils;
 
-import com.liulishuo.filedownloader.BuildConfig;
 import com.liulishuo.filedownloader.connection.FileDownloadConnection;
 import com.liulishuo.filedownloader.download.CustomComponentHolder;
 import com.liulishuo.filedownloader.exception.FileDownloadGiveUpRetryException;
@@ -839,7 +838,7 @@ public class FileDownloadUtils {
     }
 
     public static String defaultUserAgent() {
-        return formatString("FileDownloader/%s", BuildConfig.VERSION_NAME);
+        return "FileDownloader";
     }
 
     private static boolean isAppOnForeground(Context context) {
