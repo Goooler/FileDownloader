@@ -33,7 +33,7 @@ checkstyle {
 }
 
 dependencies {
-    testImplementation "junit:junit:4.12"
+    testImplementation "junit:junit:4.13.2"
     //noinspection GradleDynamicVersion
     testImplementation "org.mockito:mockito-core:2.+"
     testImplementation "org.robolectric:robolectric:3.3.2"
