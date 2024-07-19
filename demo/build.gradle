@@ -47,5 +47,5 @@ dependencies {
     debugImplementation 'cn.dreamtobe.threaddebugger:threaddebugger:1.6.3'
     releaseImplementation 'cn.dreamtobe.threaddebugger:threaddebugger-no-op:1.6.3'
     // for testing
-    implementation 'com.squareup.okio:okio:1.14.0'
+    implementation 'com.squareup.okio:okio:3.9.0'
 }
