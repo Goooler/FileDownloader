@@ -19,6 +19,7 @@ package com.liulishuo.filedownloader.services;
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE;
 
 import android.annotation.SuppressLint;
+import android.app.ForegroundServiceStartNotAllowedException;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
@@ -89,30 +90,36 @@ public class FileDownloadService extends Service {
 
     private void inspectRunServiceForeground(Intent intent) {
         if (intent == null) return;
-        final boolean isForeground = intent.getBooleanExtra(ExtraKeys.IS_FOREGROUND, false);
-        if (isForeground) {
-            ForegroundServiceConfig config = CustomComponentHolder.getImpl()
-                    .getForegroundConfigInstance();
-            if (config.isNeedRecreateChannelId()
-                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationChannel notificationChannel = new NotificationChannel(
-                        config.getNotificationChannelId(),
-                        config.getNotificationChannelName(),
-                        NotificationManager.IMPORTANCE_LOW
+        try {
+            final boolean isForeground = intent.getBooleanExtra(ExtraKeys.IS_FOREGROUND, false);
+            if (isForeground) {
+                ForegroundServiceConfig config = CustomComponentHolder.getImpl()
+                        .getForegroundConfigInstance();
+                if (config.isNeedRecreateChannelId()
+                        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    NotificationChannel notificationChannel = new NotificationChannel(
+                            config.getNotificationChannelId(),
+                            config.getNotificationChannelName(),
+                            NotificationManager.IMPORTANCE_LOW
+                    );
+                    NotificationManager notificationManager =
+                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    if (notificationManager == null) return;
+                    notificationManager.createNotificationChannel(notificationChannel);
+                }
+                ServiceCompat.startForeground(
+                        this,
+                        config.getNotificationId(),
+                        config.getNotification(this),
+                        FOREGROUND_SERVICE_TYPE_SHORT_SERVICE
                 );
-                NotificationManager notificationManager =
-                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                if (notificationManager == null) return;
-                notificationManager.createNotificationChannel(notificationChannel);
+                if (FileDownloadLog.NEED_LOG) {
+                    FileDownloadLog.d(this, "run service foreground with config: %s", config);
+                }
             }
-            ServiceCompat.startForeground(
-                    this,
-                    config.getNotificationId(),
-                    config.getNotification(this),
-                    FOREGROUND_SERVICE_TYPE_SHORT_SERVICE
-            );
-            if (FileDownloadLog.NEED_LOG) {
-                FileDownloadLog.d(this, "run service foreground with config: %s", config);
+        } catch (Exception e) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && e instanceof ForegroundServiceStartNotAllowedException) {
+                FileDownloadLog.d(this, "Failed to start service because app is not in valid state to start a service with exception: %s", e.getLocalizedMessage());
             }
         }
     }
