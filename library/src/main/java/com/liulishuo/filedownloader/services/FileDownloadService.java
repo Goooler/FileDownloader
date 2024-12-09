@@ -120,6 +120,7 @@ public class FileDownloadService extends Service {
         } catch (Exception e) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && e instanceof ForegroundServiceStartNotAllowedException) {
                 FileDownloadLog.d(this, "Failed to start service because app is not in valid state to start a service with exception: %s", e.getLocalizedMessage());
+                stopSelf();
             }
         }
     }
